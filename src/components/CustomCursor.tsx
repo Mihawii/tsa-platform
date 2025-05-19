@@ -8,29 +8,31 @@ export default function CustomCursor() {
   const [isActive, setIsActive] = useState(false);
 
   useEffect(() => {
-    const move = (e: MouseEvent) => {
-      if (cursorRef.current) {
-        cursorRef.current.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
-      }
-    };
-    const handleDown = () => setIsActive(true);
-    const handleUp = () => setIsActive(false);
-    const handlePointer = (e: MouseEvent) => {
-      const el = e.target as HTMLElement;
-      setIsPointer(
-        !!(el.tagName === 'A' || el.tagName === 'BUTTON' || el.closest('a') || el.closest('button'))
-      );
-    };
-    window.addEventListener('mousemove', move, { passive: true });
-    window.addEventListener('mousedown', handleDown);
-    window.addEventListener('mouseup', handleUp);
-    window.addEventListener('mousemove', handlePointer, { passive: true });
-    return () => {
-      window.removeEventListener('mousemove', move);
-      window.removeEventListener('mousedown', handleDown);
-      window.removeEventListener('mouseup', handleUp);
-      window.removeEventListener('mousemove', handlePointer);
-    };
+    if (typeof window !== 'undefined') {
+      const move = (e: MouseEvent) => {
+        if (cursorRef.current) {
+          cursorRef.current.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+        }
+      };
+      const handleDown = () => setIsActive(true);
+      const handleUp = () => setIsActive(false);
+      const handlePointer = (e: MouseEvent) => {
+        const el = e.target as HTMLElement;
+        setIsPointer(
+          !!(el.tagName === 'A' || el.tagName === 'BUTTON' || el.closest('a') || el.closest('button'))
+        );
+      };
+      window.addEventListener('mousemove', move, { passive: true });
+      window.addEventListener('mousedown', handleDown);
+      window.addEventListener('mouseup', handleUp);
+      window.addEventListener('mousemove', handlePointer, { passive: true });
+      return () => {
+        window.removeEventListener('mousemove', move);
+        window.removeEventListener('mousedown', handleDown);
+        window.removeEventListener('mouseup', handleUp);
+        window.removeEventListener('mousemove', handlePointer);
+      };
+    }
   }, []);
 
   return (

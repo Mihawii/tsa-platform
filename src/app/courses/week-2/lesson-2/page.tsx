@@ -83,19 +83,23 @@ export default function Lesson2Page() {
 
   // Load section progress from localStorage
   useEffect(() => {
-    const key = "week2_lesson2_sections";
-    const stored = localStorage.getItem(key);
-    if (stored) setSectionProgress(JSON.parse(stored));
+    if (typeof window !== 'undefined') {
+      const key = "week2_lesson2_sections";
+      const stored = localStorage.getItem(key);
+      if (stored) setSectionProgress(JSON.parse(stored));
+    }
   }, []);
 
   // Save section progress to localStorage
   useEffect(() => {
-    const key = "week2_lesson2_sections";
-    localStorage.setItem(key, JSON.stringify(sectionProgress));
-    if (sectionProgress.length === sections.length - 1) {
-      localStorage.setItem("week2_lesson2_progress", JSON.stringify({ status: "Completed", score: 100 }));
-    } else if (sectionProgress.length > 0) {
-      localStorage.setItem("week2_lesson2_progress", JSON.stringify({ status: "In Progress", score: 0 }));
+    if (typeof window !== 'undefined') {
+      const key = "week2_lesson2_sections";
+      localStorage.setItem(key, JSON.stringify(sectionProgress));
+      if (sectionProgress.length === sections.length - 1) {
+        localStorage.setItem("week2_lesson2_progress", JSON.stringify({ status: "Completed", score: 100 }));
+      } else if (sectionProgress.length > 0) {
+        localStorage.setItem("week2_lesson2_progress", JSON.stringify({ status: "In Progress", score: 0 }));
+      }
     }
   }, [sectionProgress]);
 

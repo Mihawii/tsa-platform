@@ -1,8 +1,7 @@
 {
-  "/courses/page": "app/courses/page.js",
-  "/courses/week-3/lesson-1/page": "app/courses/week-3/lesson-1/page.js",
-  "/courses/week-1/lesson-2/page": "app/courses/week-1/lesson-2/page.js",
+  "/login/page": "app/login/page.js",
   "/page": "app/page.js",
   "/resume/page": "app/resume/page.js",
+  "/courses/page": "app/courses/page.js",
   "/courses/week-1/lesson-1/page": "app/courses/week-1/lesson-1/page.js"
 }

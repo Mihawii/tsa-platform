@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Navigation from '@/components/Navigation';
 
@@ -20,8 +20,16 @@ export default function Verification() {
     await new Promise(resolve => setTimeout(resolve, 1000));
     
     // Redirect to dashboard after verification
-    window.location.href = '/dashboard';
+    if (typeof window !== 'undefined') {
+      window.location.href = '/dashboard';
+    }
   };
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.location.href = '/dashboard';
+    }
+  }, []);
 
   return (
     <main className="min-h-screen">

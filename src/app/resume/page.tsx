@@ -8,7 +8,7 @@ import Navigation from '@/components/Navigation'; // Assuming Navigation is need
 let PDFDocument: any = null;
 let mammoth: any = null;
 let pdfjs: any = null;
-
+// PDF parsing is only available in the browser
 if (typeof window !== 'undefined') {
   // @ts-ignore
   PDFDocument = require('pdf-lib').PDFDocument;

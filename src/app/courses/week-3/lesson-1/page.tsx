@@ -221,8 +221,10 @@ export default function Lesson1Page() {
     };
 
     updateTimelineWidth();
-    window.addEventListener('resize', updateTimelineWidth);
-    return () => window.removeEventListener('resize', updateTimelineWidth);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', updateTimelineWidth);
+      return () => window.removeEventListener('resize', updateTimelineWidth);
+    }
   }, []);
 
   const handleDragStart = (task: Task) => {
@@ -273,6 +275,16 @@ export default function Lesson1Page() {
     if (riskScore > 0.6) return "bg-red-500/20";
     if (riskScore > 0.3) return "bg-yellow-500/20";
     return "bg-green-500/20";
+  };
+
+  const handleQuizSubmit = (correct: number) => {
+    if (typeof window !== 'undefined') {
+      if (correct >= Math.ceil(quizQuestions.length * 0.8)) {
+        localStorage.setItem("week3_lesson1_progress", JSON.stringify({ status: "Completed", score: Math.round((correct / quizQuestions.length) * 100) }));
+      } else {
+        localStorage.setItem("week3_lesson1_progress", JSON.stringify({ status: "In Progress", score: Math.round((correct / quizQuestions.length) * 100) }));
+      }
+    }
   };
 
   return (
@@ -1185,12 +1197,7 @@ export default function Lesson1Page() {
                             ? "Great job! You have a strong grasp of Agile."
                             : "Keep practicing! Review the material and try again."
                       );
-                      // Save progress if passed
-                      if (correct >= Math.ceil(quizQuestions.length * 0.8)) {
-                        localStorage.setItem("week3_lesson1_progress", JSON.stringify({ status: "Completed", score: Math.round((correct / quizQuestions.length) * 100) }));
-                      } else {
-                        localStorage.setItem("week3_lesson1_progress", JSON.stringify({ status: "In Progress", score: Math.round((correct / quizQuestions.length) * 100) }));
-                      }
+                      handleQuizSubmit(correct);
                     }}
                     className="space-y-6"
                   >

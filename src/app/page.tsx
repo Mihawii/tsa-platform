@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -19,55 +19,61 @@ export default function Home() {
 
   // On mount, get user from localStorage
   useEffect(() => {
-    const stored = localStorage.getItem('tsa_user');
-    if (stored) {
-      const user = JSON.parse(stored);
-      setUserName(user.name);
-      setUserEmail(user.email);
-      setShowGreeting(true);
-    } else {
-      window.location.replace('/login');
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('tsa_user');
+      if (stored) {
+        const user = JSON.parse(stored);
+        setUserName(user.name);
+        setUserEmail(user.email);
+        setShowGreeting(true);
+      } else {
+        window.location.replace('/login');
+      }
     }
   }, []);
 
   // Mouse move handler
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseRef.current = { x: e.clientX, y: e.clientY };
-      setMouse({ x: e.clientX, y: e.clientY });
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    if (typeof window !== 'undefined') {
+      const handleMouseMove = (e: MouseEvent) => {
+        mouseRef.current = { x: e.clientX, y: e.clientY };
+        setMouse({ x: e.clientX, y: e.clientY });
+      };
+      window.addEventListener('mousemove', handleMouseMove);
+      return () => window.removeEventListener('mousemove', handleMouseMove);
+    }
   }, []);
 
   // Animation loop for parallax and cursor
   useEffect(() => {
-    const animate = () => {
-      // Only apply parallax if NOT showing greeting
-      if (!showGreeting && containerRef.current) {
-        const { width, height, left, top } = containerRef.current.getBoundingClientRect();
-        const relX = mouseRef.current.x - left;
-        const relY = mouseRef.current.y - top;
-        let x = (relX - width / 2) / 20;
-        let y = (relY - height / 2) / 20;
-        // Clamp the rotation to -10deg to 10deg
-        x = Math.max(-10, Math.min(10, x));
-        y = Math.max(-10, Math.min(10, y));
-        containerRef.current.style.transform = `perspective(1000px) rotateX(${-y}deg) rotateY(${x}deg)`;
-      } else if (containerRef.current) {
-        // Reset transform when greeting is shown
-        containerRef.current.style.transform = 'none';
-      }
-      // Cursor
-      if (cursorRef.current) {
-        cursorRef.current.style.transform = `translate3d(${mouseRef.current.x}px, ${mouseRef.current.y}px, 0)`;
-      }
+    if (typeof window !== 'undefined') {
+      const animate = () => {
+        // Only apply parallax if NOT showing greeting
+        if (!showGreeting && containerRef.current) {
+          const { width, height, left, top } = containerRef.current.getBoundingClientRect();
+          const relX = mouseRef.current.x - left;
+          const relY = mouseRef.current.y - top;
+          let x = (relX - width / 2) / 20;
+          let y = (relY - height / 2) / 20;
+          // Clamp the rotation to -10deg to 10deg
+          x = Math.max(-10, Math.min(10, x));
+          y = Math.max(-10, Math.min(10, y));
+          containerRef.current.style.transform = `perspective(1000px) rotateX(${-y}deg) rotateY(${x}deg)`;
+        } else if (containerRef.current) {
+          // Reset transform when greeting is shown
+          containerRef.current.style.transform = 'none';
+        }
+        // Cursor
+        if (cursorRef.current) {
+          cursorRef.current.style.transform = `translate3d(${mouseRef.current.x}px, ${mouseRef.current.y}px, 0)`;
+        }
+        requestRef.current = requestAnimationFrame(animate);
+      };
       requestRef.current = requestAnimationFrame(animate);
-    };
-    requestRef.current = requestAnimationFrame(animate);
-    return () => {
-      if (requestRef.current) cancelAnimationFrame(requestRef.current);
-    };
+      return () => {
+        if (requestRef.current) cancelAnimationFrame(requestRef.current);
+      };
+    }
   }, [showGreeting]);
 
   useEffect(() => {

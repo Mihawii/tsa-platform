@@ -71,35 +71,36 @@ export default function CoursesPage() {
   const router = useRouter();
 
   // Store all lesson progress in state to avoid SSR issues
-  const [lessonProgress, setLessonProgress] = useState<{ [key: string]: LessonProgress }>({});
+  const [lessonProgress, setLessonProgress] = useState<Record<string, LessonProgress>>({});
 
-  // Initialize progress in localStorage and state
+  // Only access localStorage on the client
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const stored = localStorage.getItem('tsa_user');
-    if (!stored) {
-      window.location.replace('/login');
-    } else {
-      setIsAuthChecked(true);
-      const progressObj: { [key: string]: LessonProgress } = {};
-      COURSE_DATA.forEach((week, weekIndex) => {
-        week.lessons.forEach((_, lessonIndex) => {
-          const key = `week${week.week}_lesson${lessonIndex + 1}_progress`;
-          let value = localStorage.getItem(key);
-          if (!value) {
-            // For testing: Mark Week 1 lessons as completed
-            if (week.week === 1) {
-              value = JSON.stringify({ status: 'Completed', score: 100 });
-              localStorage.setItem(key, value);
-            } else {
-              value = JSON.stringify({ status: 'Not Started', score: 0 });
-              localStorage.setItem(key, value);
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('tsa_user');
+      if (!stored) {
+        window.location.replace('/login');
+      } else {
+        setIsAuthChecked(true);
+        const progressObj: Record<string, LessonProgress> = {};
+        COURSE_DATA.forEach((week, weekIndex) => {
+          week.lessons.forEach((_, lessonIndex) => {
+            const key = `week${week.week}_lesson${lessonIndex + 1}_progress`;
+            let value = localStorage.getItem(key);
+            if (!value) {
+              // For testing: Mark Week 1 lessons as completed
+              if (week.week === 1) {
+                value = JSON.stringify({ status: 'Completed', score: 100 });
+                localStorage.setItem(key, value);
+              } else {
+                value = JSON.stringify({ status: 'Not Started', score: 0 });
+                localStorage.setItem(key, value);
+              }
             }
-          }
-          progressObj[key] = JSON.parse(value);
+            progressObj[key] = JSON.parse(value);
+          });
         });
-      });
-      setLessonProgress(progressObj);
+        setLessonProgress(progressObj);
+      }
     }
   }, []);
 

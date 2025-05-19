@@ -32,22 +32,24 @@ export default function Lesson2Page() {
 
   // Load section progress from localStorage
   useEffect(() => {
-    const key = "week1_lesson2_sections";
-    const stored = localStorage.getItem(key);
-    if (stored) {
-      setSectionProgress(JSON.parse(stored));
+    if (typeof window !== 'undefined') {
+      const key = "week1_lesson2_sections";
+      const stored = localStorage.getItem(key);
+      if (stored) setSectionProgress(JSON.parse(stored));
     }
   }, []);
 
   // Save section progress to localStorage
   useEffect(() => {
-    const key = "week1_lesson2_sections";
-    localStorage.setItem(key, JSON.stringify(sectionProgress));
-    // If all sections (except quiz) are completed, mark lesson as completed
-    if (sectionProgress.length === sections.length - 1) {
-      localStorage.setItem("week1_lesson2_progress", JSON.stringify({ status: "Completed", score: 100 }));
-    } else if (sectionProgress.length > 0) {
-      localStorage.setItem("week1_lesson2_progress", JSON.stringify({ status: "In Progress", score: 0 }));
+    if (typeof window !== 'undefined') {
+      const key = "week1_lesson2_sections";
+      localStorage.setItem(key, JSON.stringify(sectionProgress));
+      // If all sections (except quiz) are completed, mark lesson as completed
+      if (sectionProgress.length === sections.length - 1) {
+        localStorage.setItem("week1_lesson2_progress", JSON.stringify({ status: "Completed", score: 100 }));
+      } else if (sectionProgress.length > 0) {
+        localStorage.setItem("week1_lesson2_progress", JSON.stringify({ status: "In Progress", score: 0 }));
+      }
     }
   }, [sectionProgress]);
 

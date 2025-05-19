@@ -17,14 +17,18 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem("tsa_user");
-    if (stored) setUser(JSON.parse(stored));
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem("tsa_user");
+      if (stored) setUser(JSON.parse(stored));
+    }
   }, []);
 
   const logout = () => {
-    localStorage.removeItem("tsa_user");
-    setUser(null);
-    window.location.href = "/login";
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem("tsa_user");
+      setUser(null);
+      window.location.href = "/login";
+    }
   };
 
   return (
@@ -35,5 +39,23 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 }
 
 export function useSession() {
-  return useContext(SessionContext);
+  const [user, setUser] = useState<{ name: string; email: string } | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem("tsa_user");
+      if (stored) {
+        setUser(JSON.parse(stored));
+      }
+    }
+  }, []);
+
+  const logout = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem("tsa_user");
+      window.location.href = "/login";
+    }
+  };
+
+  return { user, logout };
 } 
