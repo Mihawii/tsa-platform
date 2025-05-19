@@ -8,8 +8,6 @@ import Navigation from '@/components/Navigation'; // Assuming Navigation is need
 let PDFDocument: any = null;
 let mammoth: any = null;
 let pdfjs: any = null;
-let TextItem: any = null;
-let TextMarkedContent: any = null;
 
 if (typeof window !== 'undefined') {
   // @ts-ignore
@@ -18,10 +16,6 @@ if (typeof window !== 'undefined') {
   mammoth = require('mammoth');
   // @ts-ignore
   pdfjs = require('pdfjs-dist');
-  // @ts-ignore
-  TextItem = require('pdfjs-dist/types/src/display/api').TextItem;
-  // @ts-ignore
-  TextMarkedContent = require('pdfjs-dist/types/src/display/api').TextMarkedContent;
   if (pdfjs && pdfjs.GlobalWorkerOptions) {
     pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
   }
