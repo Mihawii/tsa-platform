@@ -70,50 +70,60 @@ export default function CoursesPage() {
   const { user, logout } = useSession();
   const router = useRouter();
 
-  // Initialize progress in localStorage
+  // Store all lesson progress in state to avoid SSR issues
+  const [lessonProgress, setLessonProgress] = useState<{ [key: string]: LessonProgress }>({});
+
+  // Initialize progress in localStorage and state
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     const stored = localStorage.getItem('tsa_user');
     if (!stored) {
       window.location.replace('/login');
     } else {
       setIsAuthChecked(true);
-      
-      // Initialize progress for all lessons if not already set
+      const progressObj: { [key: string]: LessonProgress } = {};
       COURSE_DATA.forEach((week, weekIndex) => {
         week.lessons.forEach((_, lessonIndex) => {
           const key = `week${week.week}_lesson${lessonIndex + 1}_progress`;
-          if (!localStorage.getItem(key)) {
+          let value = localStorage.getItem(key);
+          if (!value) {
             // For testing: Mark Week 1 lessons as completed
             if (week.week === 1) {
-              localStorage.setItem(key, JSON.stringify({ status: 'Completed', score: 100 }));
+              value = JSON.stringify({ status: 'Completed', score: 100 });
+              localStorage.setItem(key, value);
             } else {
-              localStorage.setItem(key, JSON.stringify({ status: 'Not Started', score: 0 }));
+              value = JSON.stringify({ status: 'Not Started', score: 0 });
+              localStorage.setItem(key, value);
             }
           }
+          progressObj[key] = JSON.parse(value);
         });
       });
+      setLessonProgress(progressObj);
     }
   }, []);
 
-  // Get lesson progress from localStorage
+  // Helper to get lesson progress from state
   const getLessonProgress = (week: number, lesson: number): LessonProgress => {
     const key = `week${week}_lesson${lesson}_progress`;
-    const progress = localStorage.getItem(key);
-    return progress ? JSON.parse(progress) : { status: 'Not Started', score: 0 };
+    return lessonProgress[key] || { status: 'Not Started', score: 0 };
   };
 
-  // Update lesson progress
+  // Update lesson progress in state and localStorage
   const updateLessonProgress = (week: number, lesson: number, status: 'Completed' | 'In Progress' | 'Not Started', score: number = 0) => {
     const key = `week${week}_lesson${lesson}_progress`;
-    localStorage.setItem(key, JSON.stringify({ status, score }));
+    const newProgress = { status, score };
+    setLessonProgress(prev => ({ ...prev, [key]: newProgress }));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(key, JSON.stringify(newProgress));
+    }
   };
 
   // Calculate week progress
   const calculateWeekProgress = (week: number): number => {
     const weekData = COURSE_DATA[week - 1];
     if (!weekData) return 0;
-    
-    const lessonProgresses = weekData.lessons.map((_, lessonIndex) => 
+    const lessonProgresses = weekData.lessons.map((_, lessonIndex) =>
       getLessonProgress(week, lessonIndex + 1)
     );
     const completedLessons = lessonProgresses.filter(p => p.status === 'Completed').length;
@@ -152,7 +162,6 @@ export default function CoursesPage() {
     if (currentStatus === 'Not Started') {
       updateLessonProgress(week, lesson, 'In Progress');
     }
-    
     setIsTransitioning(true);
     setPendingRoute(`/courses/week-${week}/${slug}`);
     setTimeout(() => {
