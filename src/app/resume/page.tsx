@@ -1,16 +1,30 @@
-'use client';
+"use client";
 
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import Navigation from '@/components/Navigation'; // Assuming Navigation is needed here too
-import { PDFDocument } from 'pdf-lib';
-import mammoth from 'mammoth';
-import * as pdfjs from 'pdfjs-dist';
-import { TextItem, TextMarkedContent } from 'pdfjs-dist/types/src/display/api';
 
-// Initialize PDF.js worker
-if (typeof window !== 'undefined' && pdfjs && pdfjs.GlobalWorkerOptions) {
-  pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+// Only import browser-only libraries on the client
+let PDFDocument: any = null;
+let mammoth: any = null;
+let pdfjs: any = null;
+let TextItem: any = null;
+let TextMarkedContent: any = null;
+
+if (typeof window !== 'undefined') {
+  // @ts-ignore
+  PDFDocument = require('pdf-lib').PDFDocument;
+  // @ts-ignore
+  mammoth = require('mammoth');
+  // @ts-ignore
+  pdfjs = require('pdfjs-dist');
+  // @ts-ignore
+  TextItem = require('pdf-dist/types/src/display/api').TextItem;
+  // @ts-ignore
+  TextMarkedContent = require('pdf-dist/types/src/display/api').TextMarkedContent;
+  if (pdfjs && pdfjs.GlobalWorkerOptions) {
+    pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+  }
 }
 
 interface ScoreBreakdown {
@@ -165,19 +179,22 @@ export default function ResumeCheckerPage() {
     return () => clearInterval(interval);
   }, [loading]);
 
-  const extractTextFromFile = async (file: File): Promise<string> => {
+  // Only define extractTextFromFile on the client
+  const extractTextFromFile = useCallback(async (file: File): Promise<string> => {
+    if (typeof window === 'undefined' || !pdfjs || !mammoth) {
+      throw new Error('This feature is only available in the browser.');
+    }
     const fileType = file.type;
     const fileContent = await file.arrayBuffer();
 
     if (fileType === 'application/pdf') {
       const pdf = await pdfjs.getDocument({ data: fileContent }).promise;
       let fullText = '';
-      
       for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
         const textContent = await page.getTextContent();
         const pageText = textContent.items
-          .map((item: TextItem | TextMarkedContent) => {
+          .map((item: any) => {
             if ('str' in item) {
               return item.str;
             }
@@ -193,7 +210,7 @@ export default function ResumeCheckerPage() {
       return result.value;
     }
     throw new Error('Unsupported file type');
-  };
+  }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -213,6 +230,11 @@ export default function ResumeCheckerPage() {
     setFeedback(null);
     setError(null);
     try {
+      if (typeof window === 'undefined') {
+        setError('This feature is only available in the browser.');
+        setLoading(false);
+        return;
+      }
       const text = await extractTextFromFile(file);
       setExtractedText(text);
       if (!text || text.length < 200) {
