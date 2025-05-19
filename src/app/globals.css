@@ -1,0 +1,266 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-rgb: 0, 0, 0;
+  --accent-color: 192, 192, 192;
+  --dot-color: rgba(192, 192, 192, 0.015); /* Even more subtle dots */
+  /* Glass effect styles for the main content bubble (dynamic island) - Very subtle/transparent */
+  --glass-bg: rgba(255, 255, 255, 0.1); /* Decreased opacity to 10% */
+  --glass-border: rgba(255, 255, 255, 0.12); /* Decreased border opacity to 12% */
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+  cursor: none; /* Hide default cursor */
+}
+
+/* Main content glass bubble */
+.glass-effect {
+  background: var(--glass-bg);
+  backdrop-filter: blur(15px); /* Adjusted blur for subtlety */
+  border: 1px solid var(--glass-border); /* Adjusted border thickness */
+  border-radius: 16px; /* Adjusted radius */
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.1), /* Adjusted shadow */
+    0 0 0 0.5px rgba(255, 255, 255, 0.05) inset, /* Adjusted inner border */
+    0 0 5px rgba(255, 255, 255, 0.01); /* Adjusted inner glow */
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-effect::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.03) 0%,
+    rgba(255, 255, 255, 0.01) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+/* Interactive Background Elements - Simplified */
+.interactive-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* Retro Cursor */
+.custom-cursor {
+  pointer-events: none;
+  z-index: 99999;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 24px;
+  height: 24px;
+  background: transparent;
+}
+
+.cursor-arrow-style,
+.cursor-pointer-style {
+  width: 24px;
+  height: 24px;
+  background: white;
+  border-left: 2px solid black;
+  border-bottom: 2px solid black;
+  clip-path: polygon(0 0, 100% 50%, 40% 60%, 60% 100%, 35% 60%, 0 80%);
+  box-shadow: 1px 1px 0 0 #000, 0 0 0 1px #000;
+}
+
+.cursor-active-style {
+  filter: drop-shadow(0 0 8px #fff) drop-shadow(1px 1px 0 #000);
+}
+
+.cursor-trail {
+  display: none; /* Remove trail for retro look */
+}
+
+.dot-grid {
+  background-image: radial-gradient(var(--dot-color) 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-position: center center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  will-change: transform;
+  transform-origin: center;
+}
+
+.vignette {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at center,
+    transparent 0%,
+    rgba(0, 0, 0, 0.8) 50%, /* Adjusted opacity */
+    rgba(0, 0, 0, 1) 100% /* Stronger to pure black */
+  );
+  z-index: 2;
+}
+
+/* Enhanced Parallax styles */
+.parallax-container {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.parallax-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  will-change: transform;
+}
+
+.parallax-content {
+  transform: translateZ(0);
+  transition: transform 0.1s ease-out;
+}
+
+/* Custom animations */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.float-animation {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Custom text styles */
+.gradient-text {
+  background: radial-gradient(circle at 60% 40%,
+    #ffffff 0%,
+    #f5f5f5 7%,
+    #c0c0c0 14%,
+    #888888 21%,
+    #b0b0b0 28%,
+    #888888 35%,
+    #b0b0b0 42%,
+    #888888 49%,
+    #444444 56%,
+    #888888 63%,
+    #b0b0b0 70%,
+    #c0c0c0 77%,
+    #f5f5f5 90%,
+    #ffffff 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  background-size: 200% 200%;
+  animation: gradient-diffusion 8s linear infinite;
+}
+
+@keyframes gradient-diffusion {
+  0% {
+    background-position: 60% 40%;
+  }
+  20% {
+    background-position: 80% 60%;
+  }
+  40% {
+    background-position: 60% 80%;
+  }
+  60% {
+    background-position: 40% 60%;
+  }
+  80% {
+    background-position: 40% 40%;
+  }
+  100% {
+    background-position: 60% 40%;
+  }
+}
+
+/* Button styles */
+.primary-button {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.primary-button:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.1));
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* Brighter vignette/gradient for courses section */
+.courses-bright-vignette {
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10;
+  background: linear-gradient(90deg, rgba(255,255,255,0.12) 0%, transparent 20%, transparent 80%, rgba(255,255,255,0.12) 100%);
+}
+
+/* Make courses section scrollable */
+.courses-scrollable {
+  max-height: 80vh;
+  overflow-y: auto;
+  padding-bottom: 2rem;
+}
+
+.metallic-glow {
+  background: linear-gradient(135deg, #e0e0e0 0%, #b0b0b0 40%, #f8f8f8 60%, #c0c0c0 100%);
+  box-shadow: 0 0 16px 4px rgba(192,192,192,0.35), 0 0 32px 8px rgba(255,255,255,0.12);
+  position: relative;
+  overflow: hidden;
+}
+.metallic-glow::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(120deg, transparent 40%, rgba(255,255,255,0.7) 50%, transparent 60%);
+  animation: metallic-shine 2.5s linear infinite;
+  pointer-events: none;
+}
+@keyframes metallic-shine {
+  0% { transform: translateX(-100%) rotate(10deg); }
+  100% { transform: translateX(100%) rotate(10deg); }
+} 
