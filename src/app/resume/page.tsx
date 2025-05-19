@@ -9,7 +9,9 @@ import * as pdfjs from 'pdfjs-dist';
 import { TextItem, TextMarkedContent } from 'pdfjs-dist/types/src/display/api';
 
 // Initialize PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+if (typeof window !== 'undefined' && pdfjs && pdfjs.GlobalWorkerOptions) {
+  pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+}
 
 interface ScoreBreakdown {
   content: number;
