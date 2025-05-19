@@ -19,9 +19,9 @@ if (typeof window !== 'undefined') {
   // @ts-ignore
   pdfjs = require('pdfjs-dist');
   // @ts-ignore
-  TextItem = require('pdf-dist/types/src/display/api').TextItem;
+  TextItem = require('pdfjs-dist/types/src/display/api').TextItem;
   // @ts-ignore
-  TextMarkedContent = require('pdf-dist/types/src/display/api').TextMarkedContent;
+  TextMarkedContent = require('pdfjs-dist/types/src/display/api').TextMarkedContent;
   if (pdfjs && pdfjs.GlobalWorkerOptions) {
     pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
   }
